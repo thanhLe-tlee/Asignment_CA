@@ -133,51 +133,9 @@ main:
     	la $a3, mmse        		# &mmse
     	jal compute_mmse
 
-    ########################################################
-    # 4) print result to terminal
-    ########################################################
-    	la $a0, filtered_label
-    	li $v0, 4
-    	syscall
-    
-    	la $t0, output_signal      	# pointer into output[]
-    	li $t1, 0           		# i = 0
-
-print_output_loop:
-    	li $t2, 10
-    	bge $t1, $t2, end_print_output
-
-    	lwc1 $f12, 0($t0)    		# value to print
-    	li $v0, 2          		# print float
-    	syscall
-
-    	la $a0, space
-    	li $v0, 4
-    	syscall
-
-    	addi $t1, $t1, 1
-    	addi $t0, $t0, 4     		# next float
-    	j print_output_loop
-
-end_print_output:
-    	la $a0, newline
-    	li $v0, 4
-    	syscall
-    
-    	la $a0, mmse_label
-    	syscall
-
-    # print MMSE
-    	lwc1 $f12, mmse
-    	li $v0, 2
-    	syscall
-
-    	la $a0, newline
-    	li $v0, 4
-    	syscall
 
     ########################################################
-    # 5) write file output.txt
+    # 4) write file output.txt
     ########################################################
     	la $a0, output_signal      	# base_y
     	la $a1, mmse        		# &mmse
@@ -1144,6 +1102,10 @@ wof_mmse_lbl_done:
     add  $t4, $s2, $s3
     li   $t5, 0
     sb   $t5, 0($t4)
+    
+    move $a0, $s2          # buffer_out
+    li   $v0, 4            # print_string
+    syscall
 
     # --- ghi buffer_out ra file_output.txt ---
     open_file(file_output_name, 1)    # open for write, fd -> $s6
